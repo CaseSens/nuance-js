@@ -1,0 +1,22 @@
+{
+  "name": "nuance",
+  "description": "Easy to use everyday javascript functions that aren't setup by default in JS",
+  "version": "0.0.1",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsup"
+  },
+  "keywords": [
+    "javascript",
+    "typescript",
+    "functions"
+  ],
+  "author": "caseygg",
+  "license": "MIT",
+  "devDependencies": {
+    "tsup": "^8.0.2",
+    "typescript": "^5.3.3"
+  }
+}
