@@ -1,4 +1,4 @@
-import { RandomInRangeProps, DebouncedFunctionProps } from "./types";
+import { RandomInRangeProps, DebouncedFunctionProps, ChangeCaseProps } from "./types";
 
 export const randomInRange = ({
   min,
@@ -68,16 +68,7 @@ export function debouncedFunction({
   };
 }
 
-/**
- * range & at properties are 0-first
- *
- * properties are set in order of importance
- */
-type ChangeCaseProps = {
-  at?: number;
-  range?: [number, number];
-  forChars?: "all" | "first" | "last";
-};
+
 
 /**
  * Capitalize specific or general letters in a string
