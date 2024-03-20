@@ -1,4 +1,9 @@
-import { RandomInRangeProps, DebouncedFunctionProps, ChangeCaseProps } from "./types";
+import {
+  RandomInRangeProps,
+  DebouncedFunctionProps,
+  ChangeCaseProps,
+  UniqueArrayProps,
+} from "./types";
 
 export const randomInRange = ({
   min,
@@ -67,8 +72,6 @@ export function debouncedFunction({
     }, delay);
   };
 }
-
-
 
 /**
  * Capitalize specific or general letters in a string
@@ -185,11 +188,98 @@ export function toMinimizedCase<T extends string>(
 }
 
 /**
+ * 
+ * @param obj: T extends string | number
+ * @param valueToRemove: T extends string | number
+ * @returns a copy of the obj with the values removed, or obj in case of error
+ */
+export function removeAllInstancesFrom<T extends string | number>(
+  obj: T,
+  valueToRemove: T
+): number | string {
+  if (typeof obj !== typeof valueToRemove) {
+    console.error("Type of obj must be same as type of valueToRemove");
+    return obj;
+  }
+
+  if (typeof obj === "string") {
+    return obj.split(valueToRemove as string).join("");
+  } else if (typeof obj === "number") {
+    try {
+      const numAsStr = String(obj);
+      const valueAsStr = String(valueToRemove);
+
+      const newObjAsStr = numAsStr.split(valueAsStr).join("");
+      return Number(newObjAsStr);
+    } catch (err) {
+      console.error(`Error in removal of values in number ${obj}`);
+      return obj;
+    }
+  } else {
+    console.error("Type of obj must be string or number");
+    return obj;
+  }
+}
+
+/**
+ * Used to check if 2 objects are completely equivalent
+ * 
+ * @param a: any
+ * @param b: any
+ * @returns true if equivalent, false if not
+ */
+export function isEquivalent(a: any, b: any): boolean {
+  const aProps = Object.getOwnPropertyNames(a);
+  const bProps = Object.getOwnPropertyNames(b);
+
+  if (aProps.length !== bProps.length) {
+    return false;
+  }
+
+  for (let i = 0; i < aProps.length; i++) {
+    const propName = aProps[i];
+    const aVal = a[propName];
+    const bVal = b[propName];
+
+    if (typeof aVal === "object" && typeof bVal === "object") {
+      if (!isEquivalent(aVal, bVal)) return false;
+    } else if (aVal !== bVal) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+/**
  * Useful when you want to remove doubles from an array, while keeping var as an array
  *
- * @param array
+ * @param T[],
+ * @param { arrayContainsObjectLiterals: boolean }: UniqueArrayProps
  * @returns array with no doubles
  */
-export function uniqueArray<T>(array: T[]): T[] {
-  return [...new Set(array)];
+export function uniqueArray<T>(
+  array: T[],
+  { arrayContainsObjectLiterals }: UniqueArrayProps = {
+    arrayContainsObjectLiterals: false,
+  }
+): T[] {
+  try {
+    if (!arrayContainsObjectLiterals) {
+      return [...new Set(array)];
+    }
+
+    try {
+      const objectsAsString = array.map((obj) => JSON.stringify(obj));
+      const uniqueObjAsStrings = [...new Set(objectsAsString)];
+      const uniqueObjects = uniqueObjAsStrings.map((str) => JSON.parse(str));
+      return uniqueObjects;
+    } catch (err) {
+      console.error("An error occurred:", err);
+      return [];
+    }
+  } catch (unexpectedErr) {
+    console.error("An error occurred:", unexpectedErr);
+    return [];
+  }
 }

@@ -21,3 +21,7 @@ export type ChangeCaseProps = {
   range?: [number, number];
   forChars?: "all" | "first" | "last";
 };
+
+export type UniqueArrayProps = {
+  arrayContainsObjectLiterals: boolean;
+}
