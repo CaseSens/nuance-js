@@ -6,7 +6,7 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "repository": {
-    "url": "https://github.com/CaseSens/nuance-js"
+    "url": "git+https://github.com/CaseSens/nuance-js.git"
   },
   "scripts": {
     "build": "tsup"
