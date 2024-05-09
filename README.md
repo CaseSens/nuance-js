@@ -28,7 +28,7 @@ import * as Nuance from "nuancejs";
 const randomNum = Nuance.randomInRange({...});
 ```
 
-**Documentation under construction**
+**You can find documentation for this library over at [nuancejs.org](https://nuancejs.org)**
 
 ## Licence
 MIT
