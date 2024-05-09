@@ -24,4 +24,9 @@ export type ChangeCaseProps = {
 
 export type UniqueArrayProps = {
   arrayContainsObjectLiterals: boolean;
-}
+};
+
+export type FillFromIndicesProps = {
+  sortIndices?: boolean;
+  inOrder?: 'ascending' | 'descending';
+};

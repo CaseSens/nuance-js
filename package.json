@@ -1,7 +1,7 @@
 {
   "name": "nuancejs",
-  "description": "Easy to use everyday javascript functions that aren't setup by default in JS",
-  "version": "0.0.3",
+  "description": "Easy to use everyday javascript functions that aren't setup by default",
+  "version": "0.0.4",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -14,7 +14,10 @@
   "keywords": [
     "javascript",
     "typescript",
-    "functions"
+    "functions",
+    "utility",
+    "utilities",
+    "utility library"
   ],
   "author": "caseygg",
   "license": "MIT",

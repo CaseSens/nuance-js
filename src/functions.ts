@@ -3,6 +3,7 @@ import {
   DebouncedFunctionProps,
   ChangeCaseProps,
   UniqueArrayProps,
+  FillFromIndicesProps,
 } from "./types";
 
 export const randomInRange = ({
@@ -33,6 +34,29 @@ export const randomInRange = ({
         : Math.floor(Math.random() * (max - min)) + min + 1;
     }
   }
+};
+
+/**
+ *
+ * Generates an array from a *start*, *end* and *step (optional)* parameter.
+ *
+ * @param start
+ * @param end
+ * @param step
+ * @returns number[]
+ */
+export const range = (
+  start: number,
+  end: number,
+  step: number = 1
+): number[] => {
+  const arr: number[] = [];
+
+  for (let i = start; i < end; i++) {
+    arr.push(i * step);
+  }
+
+  return arr;
 };
 
 /**
@@ -188,7 +212,7 @@ export function toMinimizedCase<T extends string>(
 }
 
 /**
- * 
+ *
  * @param obj: T extends string | number
  * @param valueToRemove: T extends string | number
  * @returns a copy of the obj with the values removed, or obj in case of error
@@ -223,7 +247,7 @@ export function removeAllInstancesFrom<T extends string | number>(
 
 /**
  * Used to check if 2 objects are completely equivalent
- * 
+ *
  * @param a: any
  * @param b: any
  * @returns true if equivalent, false if not
@@ -282,4 +306,28 @@ export function uniqueArray<T>(
     console.error("An error occurred:", unexpectedErr);
     return [];
   }
+}
+
+export function fillFromIndices<T>(
+  fromArray: T[],
+  indices: number[],
+  { sortIndices = false, inOrder = "ascending" }: FillFromIndicesProps = {}
+) {
+  let length = fromArray == null ? 0 : fromArray.length;
+  let indicesLength = indices == null ? 0 : indices.length;
+
+  if (!length || !indicesLength) {
+    console.error("Array or indices empty");
+    return [];
+  }
+
+  if (indices.some((index) => index < 0 || index >= fromArray.length)) {
+    throw new Error("One of the indices is out of bounds for the given array");
+  }
+
+  if (sortIndices) {
+    indices.sort((a, b) => (inOrder === "ascending" ? a - b : a + b));
+  }
+
+  return indices.map((index) => fromArray[index]);
 }
