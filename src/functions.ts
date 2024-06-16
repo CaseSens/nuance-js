@@ -72,7 +72,7 @@ export function debouncedFunction({
   delay,
   cancelCondition,
 }: DebouncedFunctionProps) {
-  let timeoutId: ReturnType<typeof setTimeout> | null;
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
   return function (...args: any[]) {
     // If the cancel condition returns true, clear the timeout and exit early
     if (cancelCondition && cancelCondition(...args)) {
@@ -110,31 +110,63 @@ export function debouncedFunction({
  */
 export function toCapitalizedCase<T extends string>(
   s: T,
-  { at, range, forChars = "all" }: ChangeCaseProps = {}
+  { at, range, forMatching, forChars = "all" }: ChangeCaseProps = {}
 ) {
   if (at !== undefined && at !== null) {
-    try {
-      const beforeChar = s.slice(0, at);
-      const charToCapitalize = s.charAt(at).toUpperCase();
-      const afterChar = s.slice(at + 1);
-
-      return beforeChar + charToCapitalize + afterChar;
-    } catch (err) {
-      console.error(err);
-      return s;
+    if (typeof at !== "number") {
+      throw new Error(`'at' prop must be a number, received: '${(typeof at === "string" ? `"${at}"` : at)}' with a type of: ${typeof at}`);
     }
+
+    if (at >= s.length) {
+      throw new Error(
+        `'at' prop is out of bounds, received: ${at}, while string length is: ${s.length}. Remember that 'at' is 0-first`
+      );
+    }
+
+    if (at < 0) {
+      throw new Error(`'at' prop cannot be negative, received: ${at}`);
+    }
+
+    const beforeChar = s.slice(0, at);
+    const charToCapitalize = s.charAt(at).toUpperCase();
+    const afterChar = s.slice(at + 1);
+
+    return beforeChar + charToCapitalize + afterChar;
   }
 
   if (range) {
+    if (!Array.isArray(range)) {
+      throw new Error(
+        `range prop must be an array, received: '${range}' with a type of: ${typeof range}`
+      );
+    }
+
+    if (range.some((value) => typeof value !== "number")) {
+      throw new Error(
+        `range prop must contain only numbers, received: [${range
+          .map((value) => `${typeof value === "string" ? `"${value}"` : value}`)
+          .join(", ")}]`
+      );
+    }
+
     if (range[0] < 0 || range[1] < 0) {
-      console.error("range values cannot be negative");
-      return s;
-    } else if (range[0] > range[1]) {
-      console.error("range values have to be succeeding");
-      return s;
-    } else if (range[0] + 1 > s.length || range[1] + 1 > s.length) {
-      console.error("range values cannot be greater than the string's length");
-      return s;
+      throw new Error(
+        `range values cannot be negative, received: [${range.join(", ")}]`
+      );
+    }
+
+    if (range[0] > range[1]) {
+      throw new Error(
+        `range values have to be succeeding, received: [${range.join(", ")}]`
+      );
+    }
+
+    if (range[0] > s.length || range[1] > s.length) {
+      throw new Error(
+        `range values cannot be greater than the string's length, received: [${range.join(
+          ", "
+        )}] while string length is: ${s.length}`
+      );
     }
 
     const capitalizedLetters = s.slice(range[0], range[1] + 1).toUpperCase();
@@ -142,6 +174,15 @@ export function toCapitalizedCase<T extends string>(
     const beforeChars = s.slice(0, range[0]);
     const afterChars = s.slice(range[1] + 1); // Adjust to slice after the range
     return beforeChars + capitalizedLetters + afterChars;
+  }
+
+  // forMatching is a RegExp
+  if (forMatching) {
+    if (!(forMatching instanceof RegExp)) {
+      throw new Error(`forMatching prop must be a RegExp, received: '${forMatching}' with a type of: ${typeof forMatching}`);
+    }
+
+    return s.replace(forMatching, (match) => match.toUpperCase());
   }
 
   switch (forChars) {
@@ -167,38 +208,85 @@ export function toCapitalizedCase<T extends string>(
  */
 export function toMinimizedCase<T extends string>(
   s: T,
-  { at, range, forChars = "all" }: ChangeCaseProps = {}
+  { at, range, forMatching, forChars = "all" }: ChangeCaseProps = {}
 ) {
   if (at !== undefined && at !== null) {
-    try {
-      const beforeChar = s.slice(0, at);
-      const charToCapitalize = s.charAt(at).toLowerCase();
-      const afterChar = s.slice(at + 1);
-
-      return beforeChar + charToCapitalize + afterChar;
-    } catch (err) {
-      console.error(err);
-      return s;
+    if (typeof at !== "number") {
+      throw new Error(
+        `'at' prop must be a number, received: '${
+          typeof at === "string" ? `"${at}"` : at
+        }' with a type of: ${typeof at}`
+      );
     }
+
+    if (at >= s.length) {
+      throw new Error(
+        `'at' prop is out of bounds, received: ${at}, while string length is: ${s.length}. Remember that 'at' is 0-first`
+      );
+    }
+
+    if (at < 0) {
+      throw new Error(`'at' prop cannot be negative, received: ${at}`);
+    }
+
+    const beforeChar = s.slice(0, at);
+    const charToMinimize = s.charAt(at).toLowerCase();
+    const afterChar = s.slice(at + 1);
+
+    return beforeChar + charToMinimize + afterChar;
   }
 
   if (range) {
-    if (range[0] < 0 || range[1] < 0) {
-      console.error("range values cannot be negative");
-      return s;
-    } else if (range[0] > range[1]) {
-      console.error("range values have to be succeeding");
-      return s;
-    } else if (range[0] + 1 > s.length || range[1] + 1 > s.length) {
-      console.error("range values cannot be greater than the string's length");
-      return s;
+    if (!Array.isArray(range)) {
+      throw new Error(
+        `range prop must be an array, received: '${range}' with a type of: ${typeof range}`
+      );
     }
 
-    const capitalizedLetters = s.slice(range[0], range[1] + 1).toLowerCase();
+    if (range.some((value) => typeof value !== "number")) {
+      throw new Error(
+        `range prop must contain only numbers, received: [${range
+          .map((value) => `${typeof value === "string" ? `"${value}"` : value}`)
+          .join(", ")}]`
+      );
+    }
+
+    if (range[0] < 0 || range[1] < 0) {
+      throw new Error(
+        `range values cannot be negative, received: [${range.join(", ")}]`
+      );
+    }
+
+    if (range[0] > range[1]) {
+      throw new Error(
+        `range values have to be succeeding, received: [${range.join(", ")}]`
+      );
+    }
+
+    if (range[0] > s.length || range[1] > s.length) {
+      throw new Error(
+        `range values cannot be greater than the string's length, received: [${range.join(
+          ", "
+        )}] while string length is: ${s.length}`
+      );
+    }
+
+    const minimizedLetters = s.slice(range[0], range[1] + 1).toLowerCase();
 
     const beforeChars = s.slice(0, range[0]);
-    const afterChars = s.slice(range[1] + 1);
-    return beforeChars + capitalizedLetters + afterChars;
+    const afterChars = s.slice(range[1] + 1); // Adjust to slice after the range
+    return beforeChars + minimizedLetters + afterChars;
+  }
+
+  // forMatching is a RegExp
+  if (forMatching) {
+    if (!(forMatching instanceof RegExp)) {
+      throw new Error(
+        `forMatching prop must be a RegExp, received: '${forMatching}' with a type of: ${typeof forMatching}`
+      );
+    }
+
+    return s.replace(forMatching, (match) => match.toLowerCase());
   }
 
   switch (forChars) {

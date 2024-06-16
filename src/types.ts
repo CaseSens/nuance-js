@@ -19,6 +19,7 @@ export type DebouncedFunctionProps = {
 export type ChangeCaseProps = {
   at?: number;
   range?: [number, number];
+  forMatching?: RegExp;
   forChars?: "all" | "first" | "last";
 };
 
