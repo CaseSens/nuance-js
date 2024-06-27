@@ -13,7 +13,7 @@ npm install nuancejs --save
 ```
 
 ### **Example Usage**
-```
+```TypeScript
 import { randomInRange } from "nuancejs"; // if you're using ES6 modules
 const { randomInRange } = require("nuancejs");
 
