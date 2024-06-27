@@ -1,4 +1,4 @@
-import { expect, test, describe, it } from "vitest";
+import { describe, it } from "vitest";
 import { toCapitalizedCase } from "../src";
 
 describe("toCapitalizedCase Suite", () => {

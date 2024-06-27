@@ -12,6 +12,28 @@ export const randomInRange = ({
   inclusive = "true true",
   containsDecimals = false,
 }: RandomInRangeProps): number => {
+  if (typeof min !== "number" || typeof max !== "number") {
+    throw new Error(
+      `min and max must be numbers, received types: [${typeof min}, ${typeof max}]`
+    );
+  }
+
+  if (typeof containsDecimals !== "boolean") {
+    throw new Error(
+      `containsDecimals must be a boolean, received type: ${typeof containsDecimals}`
+    );
+  }
+
+  if (typeof inclusive !== "string") {
+    throw new Error(
+      `inclusive must be a string, received type: ${typeof inclusive}`
+    );
+  }
+
+  if (min >= max) {
+    throw new Error(`min must be less than max, received: [${min}, ${max}]`);
+  }
+
   switch (inclusive) {
     case "true true": {
       return containsDecimals
@@ -33,17 +55,23 @@ export const randomInRange = ({
         ? Math.random() * (max - min) + min + 1
         : Math.floor(Math.random() * (max - min)) + min + 1;
     }
+    default: {
+      throw new Error(
+        `Invalid inclusive value: "${inclusive}". Inclusive must be one of the following: "true true", "true false", "false false", "false true"`
+      );
+    }
   }
 };
 
 /**
  *
  * Generates an array from a *start*, *end* and *step (optional)* parameter.
+ * The function is [inclusive, exclusive].
  *
  * @param start
  * @param end
  * @param step
- * @returns number[]
+ * @returns number[inclusive, exclusive]
  */
 export const range = (
   start: number,
@@ -52,8 +80,34 @@ export const range = (
 ): number[] => {
   const arr: number[] = [];
 
-  for (let i = start; i < end; i++) {
-    arr.push(i * step);
+  if (
+    typeof step !== "number" ||
+    typeof start !== "number" ||
+    typeof end !== "number"
+  ) {
+    throw new Error(
+      `range values must be numbers, received types: [start: ${typeof start}, end: ${typeof end}, step: ${typeof step}]`
+    );
+  }
+
+  if (start === end) {
+    return [start];
+  }
+
+  if (start > end) {
+    // Case when start is greater than end
+    let i = start;
+    while (i > end) {
+      arr.push(i);
+      i -= step;
+    }
+  } else {
+    // Case when start is less than or equal to end
+    let i = start;
+    while (i < end) {
+      arr.push(i);
+      i += step;
+    }
   }
 
   return arr;
@@ -114,7 +168,11 @@ export function toCapitalizedCase<T extends string>(
 ) {
   if (at !== undefined && at !== null) {
     if (typeof at !== "number") {
-      throw new Error(`'at' prop must be a number, received: '${(typeof at === "string" ? `"${at}"` : at)}' with a type of: ${typeof at}`);
+      throw new Error(
+        `'at' prop must be a number, received: '${
+          typeof at === "string" ? `"${at}"` : at
+        }' with a type of: ${typeof at}`
+      );
     }
 
     if (at >= s.length) {
@@ -179,7 +237,9 @@ export function toCapitalizedCase<T extends string>(
   // forMatching is a RegExp
   if (forMatching) {
     if (!(forMatching instanceof RegExp)) {
-      throw new Error(`forMatching prop must be a RegExp, received: '${forMatching}' with a type of: ${typeof forMatching}`);
+      throw new Error(
+        `forMatching prop must be a RegExp, received: '${forMatching}' with a type of: ${typeof forMatching}`
+      );
     }
 
     return s.replace(forMatching, (match) => match.toUpperCase());
@@ -298,13 +358,16 @@ export function toMinimizedCase<T extends string>(
       return s.slice(0, s.length - 1) + s.charAt(s.length - 1).toLowerCase();
   }
 }
-
 /**
- *
- * @param obj: T extends string | number
- * @param valueToRemove: T extends string | number
- * @returns a copy of the obj with the values removed, or obj in case of error
- */
+ * 
+ * 
+ 
+//
+ //
+ // @param obj: T extends string | number
+ // @param valueToRemove: T extends string | number
+ // @returns a copy of the obj with the values removed, or obj in case of error
+ //
 export function removeAllInstancesFrom<T extends string | number>(
   obj: T,
   valueToRemove: T
@@ -328,10 +391,13 @@ export function removeAllInstancesFrom<T extends string | number>(
       return obj;
     }
   } else {
-    console.error("Type of obj must be string or number");
-    return obj;
+    throw new Error(
+      `Type of obj must be string or number, received type: ${typeof obj}`
+    );
   }
 }
+
+*/
 
 /**
  * Used to check if 2 objects are completely equivalent
@@ -396,10 +462,19 @@ export function uniqueArray<T>(
   }
 }
 
+/**
+ * Retrieves elements from an array based on specified indices.
+ * @param fromArray The source array from which elements are retrieved.
+ * @param indices An array of indices indicating the positions of elements to retrieve from `fromArray`.
+ * @param options Optional configuration object of type `FillFromIndicesProps`.
+ * @param options.sortIndices If `true`, sorts the `indices` array before retrieving elements.
+ * @param options.compareFn Custom function to compare elements.
+ * @returns An array containing elements from `fromArray` at the specified indices.
+ */
 export function fillFromIndices<T>(
   fromArray: T[],
   indices: number[],
-  { sortIndices = false, inOrder = "ascending" }: FillFromIndicesProps = {}
+  { sortIndices = false, compareFn }: FillFromIndicesProps = {}
 ) {
   let length = fromArray == null ? 0 : fromArray.length;
   let indicesLength = indices == null ? 0 : indices.length;
@@ -414,7 +489,11 @@ export function fillFromIndices<T>(
   }
 
   if (sortIndices) {
-    indices.sort((a, b) => (inOrder === "ascending" ? a - b : a + b));
+    if (!compareFn) {
+      throw new Error("compareFn is required when sortIndices is true");
+    }
+    
+    indices.sort(compareFn);
   }
 
   return indices.map((index) => fromArray[index]);

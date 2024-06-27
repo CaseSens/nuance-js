@@ -29,5 +29,5 @@ export type UniqueArrayProps = {
 
 export type FillFromIndicesProps = {
   sortIndices?: boolean;
-  inOrder?: 'ascending' | 'descending';
+  compareFn?: <T>(a: T, b: T) => number;
 };

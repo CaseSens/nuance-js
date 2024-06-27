@@ -1,5 +1,6 @@
 import { describe, it } from "vitest";
 import { toMinimizedCase } from "../src";
+
 describe("toMinimizedCase Suite", () => {
   // =========================================================================================================
 
