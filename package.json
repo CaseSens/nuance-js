@@ -1,13 +1,14 @@
 {
   "name": "nuancejs",
-  "description": "Easy to use everyday javascript functions that aren't setup by default",
-  "version": "0.1.0",
+  "description": "Easy to use typescript utility library designed to be a lightweight alternative to lodash.",
+  "version": "0.1.1",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "repository": {
     "url": "git+https://github.com/CaseSens/nuance-js.git"
   },
+  "homepage": "https://nuancejs.org",
   "scripts": {
     "build": "tsup",
     "test": "vitest"
